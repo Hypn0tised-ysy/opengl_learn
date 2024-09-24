@@ -89,12 +89,14 @@ int main()
 		-0.5f,-0.5f,0.0f,
 		0.5f,-0.5f,0.0f,
 		0.0f,0.5f,0.0f,
+	};
+	float vertex1[] = { 
 		0.5f,-0.5f,0.0f,
 		0.0f,0.5f,0.0f,
-		1.0f,1.0f,0.5f
+		1.0f,1.0f,0.5f 
 	};
 	//create VBO and VAO objects
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO,VBO1,VAO1;
 	glGenBuffers(1, &VBO);
 	glGenVertexArrays(1,&VAO);
 	glBindVertexArray(VAO);
@@ -105,7 +107,17 @@ int main()
 	//unbind buffer, not necessarily
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
+	//another set of vao and vbo
+	glGenBuffers(1, &VBO1);
+	glGenVertexArrays(1, &VAO1);
+	glBindVertexArray(VAO1);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO1);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex1), vertex1, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	//unbind buffer, not necessarily
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 
 
@@ -126,10 +138,15 @@ int main()
 		glBindVertexArray(VAO);
 		//draw lineframe
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//set to default state
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glBindVertexArray(0);//not necessarily
+		//glBindVertexArray(0);//not necessarily
+		//draw another triangle with another set of vao and vbo
+		glBindVertexArray(VAO1);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glBindVertexArray(0);
+		//
 		glfwSwapBuffers(mywindow);
 		glfwPollEvents();
 	}
