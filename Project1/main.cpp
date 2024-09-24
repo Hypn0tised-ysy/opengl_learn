@@ -57,6 +57,8 @@ int main()
 	//activate shader
 	Shader myshader("./vertex.vs", "./fragment.fs");
 	myshader.use();
+	int offset_location = glGetUniformLocation(myshader.ID, "horizontal_offset");
+	glUniform1f(offset_location, 0.3f);
 
 	//render loop
 	while (!glfwWindowShouldClose(mywindow))
