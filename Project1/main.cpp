@@ -15,9 +15,18 @@ const char* vertexShaderSource = "#version 330 core\n"
 //fragment shader
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 breath;\n"
 "void main()\n"
 "{\n"
-"FragColor=vec4(0.3f,0.5f,0.8f,1.0f);\n"
+"FragColor=breath;\n"
+"}\n\0";
+//another fragment shader
+const char* fragmentShaderSource1 = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"uniform vec4 breath;\n"
+"void main()\n"
+"{\n"
+"FragColor=breath;\n"
 "}\n\0";
 int main()
 {
@@ -59,9 +68,11 @@ int main()
 		std::cout << "VERTEX SHADER COMPILATION FAILED\n"<<error_info<<"\n";
 	}
 	//create shader object
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER),fragmentShader1=glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glShaderSource(fragmentShader1, 1, &fragmentShaderSource1, NULL);
 	glCompileShader(fragmentShader);
+	glCompileShader(fragmentShader1);
 	//check if the shader is compiled successfully
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success)
@@ -69,11 +80,23 @@ int main()
 		glGetShaderInfoLog(fragmentShader, 512, NULL, error_info);
 		std::cout << "FRAGMENT SHADER COMPILATION FAILED\n" << error_info << "\n";
 	}
+	glGetShaderiv(fragmentShader1, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader1, 512, NULL, error_info);
+		std::cout << "FRAGMENT SHADER COMPILATION FAILED\n" << error_info << "\n";
+	}
 	//create shader program
-	unsigned int shader_program = glCreateProgram();
+	unsigned int shader_program = glCreateProgram(),shader_program1=glCreateProgram();
+	//first shader program
 	glAttachShader(shader_program,vertexShader);
 	glAttachShader(shader_program,fragmentShader);
+	//second shader program
+	glAttachShader(shader_program1, vertexShader);
+	glAttachShader(shader_program1, fragmentShader1);
+	//
 	glLinkProgram(shader_program);
+	glLinkProgram(shader_program1);
 	//check link status
 	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
 	if (!success)
@@ -81,9 +104,16 @@ int main()
 		glGetProgramInfoLog(shader_program, 512, NULL, error_info);
 		std::cout << "SHADER PROGRAM LINKING FAILED\n"<<error_info<<"\n";
 	}
+	glGetProgramiv(shader_program1, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetProgramInfoLog(shader_program1, 512, NULL, error_info);
+		std::cout << "SHADER PROGRAM LINKING FAILED\n" << error_info << "\n";
+	}
 	//delete shader
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	glDeleteShader(fragmentShader1);
 	//vertex data
 	float vertex[] = {
 		-0.5f,-0.5f,0.0f,
@@ -136,17 +166,28 @@ int main()
 		//
 		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
-		//draw lineframe
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//update uniform
+		double varying_time = glfwGetTime();
+		float green = static_cast<float>((sin(varying_time) + 1.0f) / 2.0f);
+		int uniform_location = glGetUniformLocation(shader_program, "breath");
+		glUniform4f(uniform_location, 0.0f, green, 0.0f, 1.0f);
+		//draw
 		glDrawArrays(GL_TRIANGLES, 0, 3);
-		//set to default state
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//glBindVertexArray(0);//not necessarily
+		//another shader
 		//draw another triangle with another set of vao and vbo
+		glUseProgram(shader_program1);
 		glBindVertexArray(VAO1);
+		//update uniform
+		double varying_time_blue = glfwGetTime();
+		float blue = static_cast<float>((sin(varying_time_blue) + 1.0f) / 2.0f);
+		int uniform_location_blue = glGetUniformLocation(shader_program, "breath");
+		glUniform4f(uniform_location_blue, 0.0f, 0.0f, blue, 1.0f);
+		//draw
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		//glBindVertexArray(0);
 		//
+		
+
 		glfwSwapBuffers(mywindow);
 		glfwPollEvents();
 	}
