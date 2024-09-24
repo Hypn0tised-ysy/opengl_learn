@@ -124,7 +124,11 @@ int main()
 		//
 		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
+		//draw lineframe
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		//set to default state
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBindVertexArray(0);//not necessarily
 		glfwSwapBuffers(mywindow);
 		glfwPollEvents();
