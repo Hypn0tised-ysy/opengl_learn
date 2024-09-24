@@ -88,7 +88,10 @@ int main()
 	float vertex[] = {
 		-0.5f,-0.5f,0.0f,
 		0.5f,-0.5f,0.0f,
-		0.0f,0.5f,0.0f
+		0.0f,0.5f,0.0f,
+		0.5f,-0.5f,0.0f,
+		0.0f,0.5f,0.0f,
+		1.0f,1.0f,0.5f
 	};
 	//create VBO and VAO objects
 	unsigned int VBO, VAO;
@@ -121,7 +124,7 @@ int main()
 		//
 		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);//not necessarily
 		glfwSwapBuffers(mywindow);
 		glfwPollEvents();
