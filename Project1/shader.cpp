@@ -59,6 +59,10 @@ void Shader::setFloat(std::string const& name, float value)const
 {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
+void Shader::setInt(std::string const& name, int value)const
+{
+	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+}
 void Shader::checkCompileError(unsigned int shader, std::string const& type)//type要么是检查shader编译是否出错，要么检查shader program链接是否出错
 {
 	int success;

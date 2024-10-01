@@ -11,7 +11,7 @@ public:
 	Shader(char const* vertexShaderPath, char const* fragmentShaderPath);
 	void use();
 	void setFloat(std::string const& name, float value)const;
-
+	void setInt(std::string const& name, int value)const;
 private:
 	void checkCompileError(unsigned int shader, std::string const& type);
 
