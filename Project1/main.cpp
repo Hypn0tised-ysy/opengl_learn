@@ -5,6 +5,7 @@
 #include "stb_image.h"
 unsigned int constexpr Width = 1024;
 unsigned int constexpr Height = 768;
+float mixValue = 0.0f;
 void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
 int main()
@@ -40,8 +41,8 @@ int main()
 		//location       //color        //texture
 		-0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f,//bottom left
 		-0.5f,0.5f,0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,//top left
-		0.5f,-0.5f,0.0f,0.0f,0.0f,1.0f,4.0f,0.0f,//bottom right
-		0.5f,0.5f,0.0f,0.0f,1.0f,1.0f,4.0f,1.0f//top right
+		0.5f,-0.5f,0.0f,0.0f,0.0f,1.0f,1.0f,0.0f,//bottom right
+		0.5f,0.5f,0.0f,0.0f,1.0f,1.0f,1.0f,1.0f//top right
 	};
 	unsigned int indices[] = {
 		0,1,3,
@@ -125,6 +126,7 @@ int main()
 	{
 		//process input
 		processInput(mywindow);
+		myshader.setFloat("mixValue", mixValue);
 		//render
 		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -159,4 +161,18 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		mixValue += 0.001f;
+		if (mixValue > 1.0f)
+			mixValue = 1.0f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		mixValue -= 0.001f;
+		if (mixValue < 0.0f)
+			mixValue = 0.0f;
+	}
+		
+		
 }
