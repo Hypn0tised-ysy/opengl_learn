@@ -6,6 +6,7 @@
 unsigned int constexpr Width = 1024;
 unsigned int constexpr Height = 768;
 float mixValue = 0.0f;
+bool pressed = false;//用来按键防抖的天才设计
 void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
 int main()
@@ -159,20 +160,31 @@ void framebuffer_size_callback(GLFWwindow* window,int width, int height)
 }
 void processInput(GLFWwindow* window)
 {
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	if (!pressed)//如果上一帧上下键被按过，则直接跳过这一帧的上下方向键的判定
 	{
-		mixValue += 0.001f;
-		if (mixValue > 1.0f)
-			mixValue = 1.0f;
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			mixValue += 0.1f;
+			if (mixValue > 1.0f)
+				mixValue = 1.0f;
+			pressed = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			mixValue -= 0.1f;
+			if (mixValue < 0.0f)
+				mixValue = 0.0f;
+			pressed = true;
+		}
 	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	else if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_PRESS)//当上一帧按下了上下方向键，且这一帧上下方向键没被按下，则把pressed设置回false
 	{
-		mixValue -= 0.001f;
-		if (mixValue < 0.0f)
-			mixValue = 0.0f;
+		pressed = false;
 	}
-		
+    //用来按键防抖
+	std::cout << mixValue << "\n";
 		
 }
