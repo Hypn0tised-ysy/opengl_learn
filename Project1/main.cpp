@@ -1,24 +1,14 @@
 #include <glad/glad.h>
 #include <glfw3.h>
 #include <iostream>
+#include "shader.h"
+#include "stb_image.h"
 unsigned int constexpr Width = 1024;
 unsigned int constexpr Height = 768;
+float mixValue = 0.0f;
+bool pressed = false;//用来按键防抖的天才设计
 void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
-//vertex shader
-const char* vertexShaderSource = "#version 330 core\n"
-"layout(location=0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"gl_Position=vec4(aPos.x,aPos.y,aPos.z,1.0);\n"
-"}\0";
-//fragment shader
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-"FragColor=vec4(0.3f,0.5f,0.8f,1.0f);\n"
-"}\n\0";
 int main()
 {
 	//初始化glfw
@@ -45,90 +35,120 @@ int main()
 		std::cout<<"fail to initialize glad\n";
 	}
 
-	//create shader object
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-	//check if the shader is compiled successfully
-	int success;
-	char error_info[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, error_info);
-		std::cout << "VERTEX SHADER COMPILATION FAILED\n"<<error_info<<"\n";
-	}
-	//create shader object
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-	//check if the shader is compiled successfully
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, error_info);
-		std::cout << "FRAGMENT SHADER COMPILATION FAILED\n" << error_info << "\n";
-	}
-	//create shader program
-	unsigned int shader_program = glCreateProgram();
-	glAttachShader(shader_program,vertexShader);
-	glAttachShader(shader_program,fragmentShader);
-	glLinkProgram(shader_program);
-	//check link status
-	glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(shader_program, 512, NULL, error_info);
-		std::cout << "SHADER PROGRAM LINKING FAILED\n"<<error_info<<"\n";
-	}
-	//delete shader
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+
+
 	//vertex data
 	float vertex[] = {
-		-0.5f,-0.5f,0.0f,
-		0.5f,-0.5f,0.0f,
-		0.0f,0.5f,0.0f
+		//location       //color        //texture
+		-0.5f,-0.5f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f,//bottom left
+		-0.5f,0.5f,0.0f,0.0f,1.0f,0.0f,0.0f,1.0f,//top left
+		0.5f,-0.5f,0.0f,0.0f,0.0f,1.0f,1.0f,0.0f,//bottom right
+		0.5f,0.5f,0.0f,0.0f,1.0f,1.0f,1.0f,1.0f//top right
+	};
+	unsigned int indices[] = {
+		0,1,3,
+		0,2,3
 	};
 	//create VBO and VAO objects
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO,EBO;
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 	glGenVertexArrays(1,&VAO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER,VBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	//load texture
+	unsigned int texture1;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+	//set wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//set filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//load image, create texture and generate mipmaps
+	stbi_set_flip_vertically_on_load(true);//竖直翻转图像，因为openGL的y轴零点在下方，很多images y轴零点在上方
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("C:/Users/14814/Desktop/container.jpg", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture\n";
+	}
+	stbi_image_free(data);
+	//another texture
+	unsigned int texture2;
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	//set wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//set filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//load image, create texture and generate mipmaps
+	data = stbi_load("C:/Users/14814/Desktop/awesomeface.png", &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture\n";
+	}
+	stbi_image_free(data);
+
+
 	//unbind buffer, not necessarily
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-
-
-
-
-
-
+	//activate shader
+	Shader myshader("./vertex.vs", "./fragment.fs");
+	myshader.use();
+	myshader.setInt("texture1", 0);
+	myshader.setInt("texture2", 1);
 
 	//render loop
 	while (!glfwWindowShouldClose(mywindow))
 	{
 		//process input
 		processInput(mywindow);
+		myshader.setFloat("mixValue", mixValue);
 		//render
-		glClearColor(0.45f, 0.32f, 0.15f, 1.0f);
+		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//
-		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);//not necessarily
+		//bind texture
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+		//draw
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
+
 		glfwSwapBuffers(mywindow);
 		glfwPollEvents();
 	}
 
 	//释放资源
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	glDeleteVertexArrays(1, &VAO);
 	glfwTerminate();
 	
@@ -140,6 +160,31 @@ void framebuffer_size_callback(GLFWwindow* window,int width, int height)
 }
 void processInput(GLFWwindow* window)
 {
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (!pressed)//如果上一帧上下键被按过，则直接跳过这一帧的上下方向键的判定
+	{
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		{
+			mixValue += 0.1f;
+			if (mixValue > 1.0f)
+				mixValue = 1.0f;
+			pressed = true;
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		{
+			mixValue -= 0.1f;
+			if (mixValue < 0.0f)
+				mixValue = 0.0f;
+			pressed = true;
+		}
+	}
+	else if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_PRESS)//当上一帧按下了上下方向键，且这一帧上下方向键没被按下，则把pressed设置回false
+	{
+		pressed = false;
+	}
+    //用来按键防抖
+	std::cout << mixValue << "\n";
+		
 }
