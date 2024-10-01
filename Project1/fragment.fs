@@ -1,8 +1,10 @@
 #version 330 core
 in vec3 color_position;
+in vec2 texture_coord;
 out vec4 FragColor;
 uniform vec4 breath;
+uniform sampler2D tex;
 void main()
 {
-FragColor=vec4(color_position,1.0f);
+FragColor=texture(tex,texture_coord);
 }
