@@ -3,9 +3,13 @@
 #include <iostream>
 #include "shader.h"
 #include "stb_image.h"
+#include <glm-master/glm/glm.hpp>
+#include <glm-master/glm/gtc/matrix_transform.hpp>
+#include <glm-master/glm/gtc/type_ptr.hpp>
 unsigned int constexpr Width = 1024;
 unsigned int constexpr Height = 768;
 float mixValue = 0.0f;
+float preMixValue = -1.0f;
 bool pressed = false;//用来按键防抖的天才设计
 void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
@@ -138,6 +142,12 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
+		//bind matrix
+		glm::mat4 trans=glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f));
+		trans = glm::rotate(trans, float(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
+		myshader.setMatrix("transform", trans);
+
 		//draw
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
@@ -185,6 +195,8 @@ void processInput(GLFWwindow* window)
 		pressed = false;
 	}
     //用来按键防抖
+	if(preMixValue!=mixValue)
 	std::cout << mixValue << "\n";
+	preMixValue = mixValue;
 		
 }
