@@ -15,11 +15,6 @@ void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
 int main()
 {
-	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-	vec = trans * vec;
-	std::cout << vec.x << vec.y << vec.z << std::endl;
 	//初始化glfw
 	glfwInit();
 	//设置opengl版本
@@ -147,6 +142,12 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
+		//bind matrix
+		glm::mat4 trans=glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f));
+		trans = glm::rotate(trans, float(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
+		myshader.setMatrix("transform", trans);
+
 		//draw
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		

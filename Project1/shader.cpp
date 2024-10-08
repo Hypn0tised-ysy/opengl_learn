@@ -63,6 +63,11 @@ void Shader::setInt(std::string const& name, int value)const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
+void Shader::setMatrix(std::string const& name, glm::mat4& matrix)
+{
+	unsigned int transformLoc = glGetUniformLocation(ID, name.c_str());
+	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+}
 void Shader::checkCompileError(unsigned int shader, std::string const& type)//type要么是检查shader编译是否出错，要么检查shader program链接是否出错
 {
 	int success;
