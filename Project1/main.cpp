@@ -142,13 +142,20 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		//bind matrix
+		//bind matrix for container1
 		glm::mat4 trans=glm::mat4(1.0f);
-		trans = glm::translate(trans, glm::vec3(0.0f, 0.0f, 0.0f));
 		trans = glm::rotate(trans, float(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
-		myshader.setMatrix("transform", trans);
+		trans = glm::translate(trans, glm::vec3(-0.5f, -0.5f, 0.0f));
+		//bind matrix for container2
+		glm::mat4 trans2 = glm::mat4(1.0f);
+		float scaleAmount = (float)sin(glfwGetTime());
+		trans2 = glm::scale(trans2,glm::vec3(scaleAmount,scaleAmount,1.0f));
+		trans2= glm::translate(trans2, glm::vec3(0.5f, 0.5f, 0.0f));
 
+		myshader.setMatrix("transform", trans);
 		//draw
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		myshader.setMatrix("transform", trans2);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		
 
