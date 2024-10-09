@@ -8,6 +8,11 @@
 #include <glm-master/glm/gtc/type_ptr.hpp>
 unsigned int constexpr Width = 1024;
 unsigned int constexpr Height = 768;
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);//cameraFront定义了camera注视的点相对于相机位置的方向和距离，注视中心center=cameraPos+cameraFront
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+float last_frame=0.0f;
+float delta_time=0.0f;
 float mixValue = 0.0f;
 float preMixValue = -1.0f;
 bool pressed = false;//用来按键防抖的天才设计
@@ -186,12 +191,7 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection= glm::mat4(1.0f);
 		//define a camera
-		float radius = 10.0f;
-		float angle = glfwGetTime();
-		glm::vec3 eye = glm::vec3(radius*sin(angle), 0.0f, radius*cos(angle));
-		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-		glm::vec3 center= glm::vec3(0.0f, 0.0f, 0.0f);//注视的位置
-		view = glm::lookAt(eye,center,up);
+		view = glm::lookAt(cameraPos,cameraPos+cameraFront,cameraUp);
 		projection = glm::perspective(glm::radians(45.0f), (float)Width / (float)Height, 0.1f, 100.0f);
 		myshader.setMatrix("view", view);
 		myshader.setMatrix("projection", projection);
@@ -233,7 +233,10 @@ void framebuffer_size_callback(GLFWwindow* window,int width, int height)
 }
 void processInput(GLFWwindow* window)
 {
-
+	float constexpr camera_speed = 2.0f;
+	float current_frame = glfwGetTime();
+	delta_time = current_frame - last_frame;
+	last_frame = current_frame;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (!pressed)//如果上一帧上下键被按过，则直接跳过这一帧的上下方向键的判定
@@ -252,8 +255,26 @@ void processInput(GLFWwindow* window)
 				mixValue = 0.0f;
 			pressed = true;
 		}
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		{
+			cameraPos += cameraFront * camera_speed * delta_time;
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		{
+			cameraPos += glm::normalize(glm::cross(cameraUp,cameraFront)) * camera_speed * delta_time;
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		{
+			cameraPos -= cameraFront * camera_speed*delta_time;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		{
+			cameraPos -= glm::normalize(glm::cross(cameraUp, cameraFront)) * camera_speed * delta_time;
+		}
+		
+
 	}
-	else if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_PRESS)//当上一帧按下了上下方向键，且这一帧上下方向键没被按下，则把pressed设置回false
+	else if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_PRESS )//当上一帧按下了上下方向键，且这一帧上下方向键没被按下，则把pressed设置回false
 	{
 		pressed = false;
 	}
