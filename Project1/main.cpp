@@ -185,7 +185,13 @@ int main()
 		//transforming matrixes
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection= glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		//define a camera
+		float radius = 10.0f;
+		float angle = glfwGetTime();
+		glm::vec3 eye = glm::vec3(radius*sin(angle), 0.0f, radius*cos(angle));
+		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::vec3 center= glm::vec3(0.0f, 0.0f, 0.0f);//×¢ÊÓµÄÎ»ÖÃ
+		view = glm::lookAt(eye,center,up);
 		projection = glm::perspective(glm::radians(45.0f), (float)Width / (float)Height, 0.1f, 100.0f);
 		myshader.setMatrix("view", view);
 		myshader.setMatrix("projection", projection);
