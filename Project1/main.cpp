@@ -203,7 +203,8 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection= glm::mat4(1.0f);
 		//define a camera
-		view = glm::lookAt(cameraPos,cameraPos+cameraFront,cameraUp);
+		view = glm::lookAt(cameraPos,cameraPos+cameraFront,cameraUp);//这里传入的cameraUp实际上并不是camera最后的up轴，而是用来计算right轴的一个小trick，借助预先设置好的cameraUp变量，结合direction向量，用叉乘计算出right轴继而再计算出真正的up轴
+		//所以当pitch为90°时，与预先设置的cameraUp向量平行，会导致视角的颠倒，此时right轴和up轴计算会出问题（结果会是零向量）
 		projection = glm::perspective(glm::radians(fov), (float)Width / (float)Height, 0.1f, 100.0f);
 		myshader.setMatrix("view", view);
 		myshader.setMatrix("projection", projection);
