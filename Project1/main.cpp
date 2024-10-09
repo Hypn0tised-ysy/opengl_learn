@@ -8,9 +8,15 @@
 #include <glm-master/glm/gtc/type_ptr.hpp>
 unsigned int constexpr Width = 1024;
 unsigned int constexpr Height = 768;
+float lastX = Width / 2;
+float lastY = Height / 2;
+float yaw = -90.0f;
+float pitch = 0.0f;
+bool firstMouse = true;//鼠标第一次进入窗口，用这个变量防止鼠标进入窗口时camera乱飞
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);//cameraFront定义了camera注视的点相对于相机位置的方向和距离，注视中心center=cameraPos+cameraFront
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+float fov=45.0f;//field of view
 float last_frame=0.0f;
 float delta_time=0.0f;
 float mixValue = 0.0f;
@@ -18,6 +24,8 @@ float preMixValue = -1.0f;
 bool pressed = false;//用来按键防抖的天才设计
 void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 int main()
 {
 	//初始化glfw
@@ -38,6 +46,10 @@ int main()
 	glfwMakeContextCurrent(mywindow);
 	//register frame_size_callback function
 	glfwSetFramebufferSizeCallback(mywindow, framebuffer_size_callback);
+	//mouse input
+	glfwSetInputMode(mywindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(mywindow, mouse_callback);
+	glfwSetScrollCallback(mywindow, scroll_callback);
 	//initialize glad
 	if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
 	{
@@ -192,7 +204,7 @@ int main()
 		glm::mat4 projection= glm::mat4(1.0f);
 		//define a camera
 		view = glm::lookAt(cameraPos,cameraPos+cameraFront,cameraUp);
-		projection = glm::perspective(glm::radians(45.0f), (float)Width / (float)Height, 0.1f, 100.0f);
+		projection = glm::perspective(glm::radians(fov), (float)Width / (float)Height, 0.1f, 100.0f);
 		myshader.setMatrix("view", view);
 		myshader.setMatrix("projection", projection);
 		//
@@ -213,11 +225,8 @@ int main()
 		}
 
 
-
-		
-
 		glfwSwapBuffers(mywindow);
-		glfwPollEvents();
+		glfwPollEvents();//poll events表示处理事件，在这个函数中会调用各种call back函数响应诸如移动鼠标等事件
 	}
 
 	//释放资源
@@ -233,10 +242,11 @@ void framebuffer_size_callback(GLFWwindow* window,int width, int height)
 }
 void processInput(GLFWwindow* window)
 {
-	float constexpr camera_speed = 2.0f;
+
 	float current_frame = glfwGetTime();
 	delta_time = current_frame - last_frame;
 	last_frame = current_frame;
+	float camera_speed = 2.0f * delta_time;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (!pressed)//如果上一帧上下键被按过，则直接跳过这一帧的上下方向键的判定
@@ -257,19 +267,19 @@ void processInput(GLFWwindow* window)
 		}
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		{
-			cameraPos += cameraFront * camera_speed * delta_time;
+			cameraPos += cameraFront * camera_speed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			cameraPos += glm::normalize(glm::cross(cameraUp,cameraFront)) * camera_speed * delta_time;
+			cameraPos += glm::normalize(glm::cross(cameraUp,cameraFront)) * camera_speed ;
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		{
-			cameraPos -= cameraFront * camera_speed*delta_time;
+			cameraPos -= cameraFront * camera_speed;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			cameraPos -= glm::normalize(glm::cross(cameraUp, cameraFront)) * camera_speed * delta_time;
+			cameraPos -= glm::normalize(glm::cross(cameraUp, cameraFront)) * camera_speed ;
 		}
 		
 
@@ -283,4 +293,41 @@ void processInput(GLFWwindow* window)
 	std::cout << mixValue << "\n";
 	preMixValue = mixValue;
 		
+}
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
+{
+	if (firstMouse)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+	float xoffset = xPos-lastX;
+	float yoffset = -(yPos-lastY);//pitch增大实际上是look down
+	lastX = xPos;
+	lastY = yPos;
+	float constexpr sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+	yaw += xoffset;
+	pitch += yoffset;
+	if (pitch > 89.0f)//当pitch增长到±90°后，视角会发生颠倒
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(direction);
+
+}
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	//改变fov来实现zoom-in\out 的效果
+	fov -= (float)yoffset;
+	if (fov < 1.0f)
+		fov = 1.0f;
+	if (fov > 45.0f)
+		fov = 45.0f;
 }
