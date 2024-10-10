@@ -17,7 +17,7 @@ float lastX = Width / 2;
 float lastY = Height / 2;
 //light
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-glm::vec3 lightColor;
+glm::vec3 lightColor=glm::vec3(1.0f);
 //mouse input settings
 float last_frame=0.0f;
 float delta_time=0.0f;
@@ -140,7 +140,8 @@ int main()
 		//render
 		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		lightColor = glm::vec3(sin(glfwGetTime()));
+		lightPos.x = sin(glfwGetTime()/2.0) * 3.0f;
+		lightPos.z = cos(glfwGetTime()/2.0) * 3.0f;
 		//
 		myshader.use();
 
@@ -156,7 +157,7 @@ int main()
 		//
  		myshader.setVec3("lightColor",lightColor);
 		myshader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		myshader.setVec3("lightPos", 1.2f, 1.0f, 2.0f);
+		myshader.setVec3("lightPos", lightPos);
 		myshader.setVec3("eyePos", camera.Position);
 		myshader.setFloat("ambient", AMBIENT);
 		myshader.setFloat("specular", SPECULAR);
