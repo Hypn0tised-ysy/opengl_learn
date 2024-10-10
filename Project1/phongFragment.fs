@@ -20,8 +20,11 @@ void main()
     vec3 diffuseColor=diffuseAngle*lightColor;
     //specular
     vec3 viewDir=normalize(eyePos-FragPos);
-    float specularAngle=max(dot(normal,viewDir),0.0f);
+    vec3 reflectDir=reflect(-lightDir,normal);
+    float specularAngle=max(dot(reflectDir,viewDir),0.0f);
+    specularAngle=pow(specularAngle,32);
     vec3 specularColor=specular*specularAngle*lightColor;
+    //ultimate color
     vec3 result=(ambientColor+diffuseColor+specularColor)*objectColor;
     FragColor = vec4(result,1.0f);
 }
