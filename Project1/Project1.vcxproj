@@ -38,6 +38,7 @@
     <None Include="lightingVertex.vs" />
     <None Include="phongFragment.fs" />
     <None Include="phongVertex.vs" />
+    <None Include="readme.md" />
     <None Include="vertex.vs" />
   </ItemGroup>
   <ItemGroup>

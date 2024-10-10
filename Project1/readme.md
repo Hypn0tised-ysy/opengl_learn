@@ -1,3 +1,1 @@
-- 实现bling phong光照模型
-- 增加了相机的竖直移动（space\shift+space）
-
+- 亮度随时间变化

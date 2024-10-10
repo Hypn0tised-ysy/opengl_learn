@@ -17,6 +17,7 @@ float lastX = Width / 2;
 float lastY = Height / 2;
 //light
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightColor;
 //mouse input settings
 float last_frame=0.0f;
 float delta_time=0.0f;
@@ -139,7 +140,7 @@ int main()
 		//render
 		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
+		lightColor = glm::vec3(sin(glfwGetTime()));
 		//
 		myshader.use();
 
@@ -153,7 +154,7 @@ int main()
 		glm::mat4 model = glm::mat4(1.0f);
 		myshader.setMatrix("model", model);
 		//
- 		myshader.setVec3("lightColor",1.0f,1.0f,1.0f);
+ 		myshader.setVec3("lightColor",lightColor);
 		myshader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
 		myshader.setVec3("lightPos", 1.2f, 1.0f, 2.0f);
 		myshader.setVec3("eyePos", camera.Position);
@@ -171,6 +172,7 @@ int main()
 		model = glm::translate(model, lightPos);
 		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
 		lightShader.setMatrix("model", model);
+		lightShader.setVec3("lightColor", lightColor);
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 

@@ -51,6 +51,7 @@
     <None Include="fragment.fs" />
     <None Include="phongVertex.vs" />
     <None Include="phongFragment.fs" />
+    <None Include="readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\container.jpg">
