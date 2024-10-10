@@ -2,20 +2,20 @@
 //bling-phong shading
 in vec3 Normal;
 in vec3 FragPos;
+in vec3 lightPosition;
 out vec4 FragColor;
 uniform float ambient;
 uniform float specular;
-uniform vec3 eyePos;
-uniform vec3 lightPos;
 uniform vec3 objectColor;
 uniform vec3 lightColor;
 void main()
 {
+    vec3 eyePos=vec3(0.0f);
     //ambient
     vec3 ambientColor=ambient*lightColor;
     //diffuse
     vec3 normal=normalize(Normal);
-    vec3 lightDir=normalize(lightPos-FragPos);
+    vec3 lightDir=normalize(lightPosition-FragPos);
     float diffuseAngle=max(dot(normal,lightDir),0.0f);
     vec3 diffuseColor=diffuseAngle*lightColor;
     //specular

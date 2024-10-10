@@ -1,3 +1,2 @@
-- 实现bling phong光照模型
-- 增加了相机的竖直移动（space\shift+space）
-
+- 在view space进行计算
+- 在view space中eye position就是原点（0，0，0）
