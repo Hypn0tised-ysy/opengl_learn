@@ -12,7 +12,9 @@ enum Camera_Movement {
 	FORWARD,
 	BACKWARD,
 	LEFT,
-	RIGHT
+	RIGHT,
+	UP,
+	DOWN,
 };
 class Camera
 {
@@ -56,21 +58,26 @@ public:
 	void PorcessKeyboard(Camera_Movement direction, float delta_time)
 	{
 		float velocity = MovementSpeed * delta_time;
-		glm::vec3 front = glm::normalize(glm::vec3(Front.x,0.0f, Front.z));
-		glm::vec3 left = glm::cross(WorldUp, front);
+		glm::vec3 left = glm::cross(WorldUp, Front);
 		switch (direction)
 		{
 		case FORWARD:
-			Position += front * velocity;
+			Position += Front * velocity;
 			break;
 		case BACKWARD:
-			Position -= front* velocity;
+			Position -= Front* velocity;
 			break;
 		case LEFT:
 			Position += left * velocity;
 			break;
 		case RIGHT:
 			Position -= left * velocity;
+			break;
+		case UP:
+			Position += WorldUp * velocity;
+				break;
+		case DOWN:
+			Position -= WorldUp*velocity;
 			break;
 		default:
 			break;

@@ -20,11 +20,9 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 //mouse input settings
 float last_frame=0.0f;
 float delta_time=0.0f;
-//keyboard settings
-float mixValue = 0.0f;
-float preMixValue = -1.0f;
-bool pressed = false;//用来按键防抖的天才设计
-
+//phong coefficient
+float AMBIENT = 0.1f;
+float SPECULAR = 0.5f;
 void framebuffer_size_callback(GLFWwindow* window,int width,int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xPos, double yPos);
@@ -63,56 +61,49 @@ int main()
 	//depth test
 	glEnable(GL_DEPTH_TEST);
 	//vertex data
-	float vertices[] = { 
-		-0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f, 
-		-0.5f, 0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f, 
-		0.5f, 0.5f, 0.5f, 
-		0.5f, 0.5f, 0.5f, 
-		-0.5f, 0.5f, 0.5f, 
-		-0.5f, -0.5f, 0.5f, 
-		-0.5f, 0.5f, 0.5f, 
-		-0.5f, 0.5f, -0.5f, 
-		-0.5f, -0.5f, -0.5f, 
-		-0.5f, -0.5f, -0.5f, 
-		-0.5f, -0.5f, 0.5f, 
-		-0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f, 
-		0.5f, 0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f,
-		0.5f, -0.5f, -0.5f, 
-		0.5f, -0.5f, 0.5f, 
-		0.5f, 0.5f, 0.5f, 
-		-0.5f, -0.5f, -0.5f, 
-		0.5f, -0.5f, -0.5f, 
-		0.5f, -0.5f, 0.5f, 
-		0.5f, -0.5f, 0.5f, 
-		-0.5f, -0.5f, 0.5f, 
-		-0.5f, -0.5f, -0.5f, 
-		-0.5f, 0.5f, -0.5f,
-		0.5f, 0.5f, -0.5f, 
-		0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f, 
-		-0.5f, 0.5f, 0.5f, 
-		-0.5f, 0.5f, -0.5f, 
-	};
-	// world space positions of our cubes
-	glm::vec3 cubePositions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
+	float vertices[] = {
+		//position            //normal
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 	};
 	//create VBO and VAO objects
 	unsigned int VBO, VAO,lightVAO;
@@ -122,67 +113,21 @@ int main()
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER,VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
 	//
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	/*
-	//load texture
-	unsigned int texture1;
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-	//set wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//set filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//load image, create texture and generate mipmaps
-	stbi_set_flip_vertically_on_load(true);//竖直翻转图像，因为openGL的y轴零点在下方，很多images y轴零点在上方
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("C:/Users/14814/Desktop/container.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture\n";
-	}
-	stbi_image_free(data);
-	//another texture
-	unsigned int texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-	//set wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//set filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//load image, create texture and generate mipmaps
-	data = stbi_load("C:/Users/14814/Desktop/awesomeface.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture\n";
-	}
-	stbi_image_free(data);
-	*/
 
 	//unbind buffer, not necessarily
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	//activate shader
-	Shader myshader("./lightingVertex.vs", "./lightingFragment.fs");//进行光照计算的shader
+	Shader myshader("./phongVertex.vs", "./phongFragment.fs");//进行光照计算的shader
 	//shader for light
 	Shader lightShader("./lightVertex.vs", "./lightFragment.fs");//渲染光源的shader
 	//render loop
@@ -190,23 +135,14 @@ int main()
 	{
 		//process input
 		processInput(mywindow);
-		myshader.setFloat("mixValue", mixValue);
+
 		//render
 		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		/*
-		//bind texture
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
-		*/
+
 		//
 		myshader.use();
-		/*
-		myshader.setInt("texture1", 0);
-		myshader.setInt("texture2", 1);
-		*/
+
 		//transforming matrixes
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection= glm::mat4(1.0f);
@@ -219,6 +155,10 @@ int main()
 		//
  		myshader.setVec3("lightColor",1.0f,1.0f,1.0f);
 		myshader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		myshader.setVec3("lightPos", 1.2f, 1.0f, 2.0f);
+		myshader.setVec3("eyePos", camera.Position);
+		myshader.setFloat("ambient", AMBIENT);
+		myshader.setFloat("specular", SPECULAR);
 		//
 		glBindVertexArray(VAO);
 		//draw
@@ -259,27 +199,8 @@ void processInput(GLFWwindow* window)
 	last_frame = current_frame;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	if (!pressed)//如果上一帧上下键被按过，则直接跳过这一帧的上下方向键的判定
-	{
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		{
-			mixValue += 0.1f;
-			if (mixValue > 1.0f)
-				mixValue = 1.0f;
-			pressed = true;
-		}
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		{
-			mixValue -= 0.1f;
-			if (mixValue < 0.0f)
-				mixValue = 0.0f;
-			pressed = true;
-		}
-}
-	else if (glfwGetKey(window, GLFW_KEY_UP) != GLFW_PRESS && glfwGetKey(window, GLFW_KEY_DOWN) != GLFW_PRESS )//当上一帧按下了上下方向键，且这一帧上下方向键没被按下，则把pressed设置回false
-	{
-		pressed = false;
-	}
+
+
 	//wasd input
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -297,13 +218,17 @@ void processInput(GLFWwindow* window)
 	{
 		camera.PorcessKeyboard(Camera_Movement::RIGHT, delta_time);
 	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	{
+		camera.PorcessKeyboard(Camera_Movement::DOWN, delta_time);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		camera.PorcessKeyboard(Camera_Movement::UP, delta_time);
+	}
 
 
 
-    //用来按键防抖
-	if(preMixValue!=mixValue)
-	std::cout << mixValue << "\n";
-	preMixValue = mixValue;
 		
 }
 void mouse_callback(GLFWwindow* window, double xPos, double yPos)

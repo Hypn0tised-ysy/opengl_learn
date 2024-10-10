@@ -49,6 +49,8 @@
     <None Include="lightFragment.fs" />
     <None Include="vertex.vs" />
     <None Include="fragment.fs" />
+    <None Include="phongVertex.vs" />
+    <None Include="phongFragment.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\container.jpg">

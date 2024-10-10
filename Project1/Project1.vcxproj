@@ -36,6 +36,8 @@
     <None Include="lightFragment.fs" />
     <None Include="lightVertex.vs" />
     <None Include="lightingVertex.vs" />
+    <None Include="phongFragment.fs" />
+    <None Include="phongVertex.vs" />
     <None Include="vertex.vs" />
   </ItemGroup>
   <ItemGroup>
