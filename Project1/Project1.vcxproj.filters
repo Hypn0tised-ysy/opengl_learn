@@ -27,6 +27,9 @@
     <ClCompile Include="image_loader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -35,10 +38,19 @@
     <ClInclude Include="stb_image.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="lightingVertex.vs" />
+    <None Include="lightingFragment.fs" />
+    <None Include="lightVertex.vs" />
+    <None Include="lightFragment.fs" />
     <None Include="vertex.vs" />
     <None Include="fragment.fs" />
+    <None Include="phongVertex.vs" />
+    <None Include="phongFragment.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\container.jpg">
