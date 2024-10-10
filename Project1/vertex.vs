@@ -11,7 +11,7 @@ out vec3 color_output;
 out vec2 texture_coord;
 void main()
 {
-gl_Position=projection*view*model*vec4(aPos.x,aPos.y,aPos.z,1.0);
+gl_Position=projection*view*model*vec4(aPos,1.0);
 color_output=input_color;
 texture_coord=texture;
 }

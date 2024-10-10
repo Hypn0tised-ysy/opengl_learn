@@ -68,6 +68,16 @@ void Shader::setMatrix(std::string const& name, glm::mat4& matrix)
 	unsigned int transformLoc = glGetUniformLocation(ID, name.c_str());
 	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
+void Shader::setVec3(std::string const& name, glm::vec3 const& vec)
+{
+	unsigned int Vec3Loc = glGetUniformLocation(ID, name.c_str());
+	glUniform3fv(Vec3Loc, 1, &vec[0]);
+}
+void Shader::setVec3(std::string const& name, float x, float y, float z)
+{
+	unsigned int Vec3Loc = glGetUniformLocation(ID, name.c_str());
+	glUniform3f(Vec3Loc, x, y, z);
+}
 void Shader::checkCompileError(unsigned int shader, std::string const& type)//type要么是检查shader编译是否出错，要么检查shader program链接是否出错
 {
 	int success;

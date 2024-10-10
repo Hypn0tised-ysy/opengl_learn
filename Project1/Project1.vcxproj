@@ -32,6 +32,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.fs" />
+    <None Include="lightingFragment.fs" />
+    <None Include="lightFragment.fs" />
+    <None Include="lightVertex.vs" />
+    <None Include="lightingVertex.vs" />
     <None Include="vertex.vs" />
   </ItemGroup>
   <ItemGroup>

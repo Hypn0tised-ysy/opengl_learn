@@ -43,6 +43,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="lightingVertex.vs" />
+    <None Include="lightingFragment.fs" />
+    <None Include="lightVertex.vs" />
+    <None Include="lightFragment.fs" />
     <None Include="vertex.vs" />
     <None Include="fragment.fs" />
   </ItemGroup>
