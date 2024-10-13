@@ -137,7 +137,7 @@ int main()
 		processInput(mywindow);
 
 		//render
-		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 		//
@@ -153,12 +153,15 @@ int main()
 		glm::mat4 model = glm::mat4(1.0f);
 		myshader.setMatrix("model", model);
 		//
- 		myshader.setVec3("lightColor",1.0f,1.0f,1.0f);
-		myshader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		myshader.setVec3("lightPos", 1.2f, 1.0f, 2.0f);
+		myshader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+		myshader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f); // darken diffuse light a bit
+		myshader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		myshader.setVec3("light.lightPos", lightPos);
 		myshader.setVec3("eyePos", camera.Position);
-		myshader.setFloat("ambient", AMBIENT);
-		myshader.setFloat("specular", SPECULAR);
+		myshader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+		myshader.setVec3("material.diffuse", 1.0f, 0.5f, 0.31f);
+		myshader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		myshader.setFloat("material.shininess", 32.0f);
 		//
 		glBindVertexArray(VAO);
 		//draw
