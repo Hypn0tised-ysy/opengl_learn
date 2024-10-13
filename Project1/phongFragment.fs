@@ -27,7 +27,7 @@ void main()
 {
     vec3 diffuse=texture(material.diffuse,TexCoord).rgb;
     vec3 ambient=texture(material.diffuse,TexCoord).rgb;
-    vec3 specular=texture(material.specular,TexCoord).rgb;
+    vec3 specular=vec3(1.0f)-texture(material.specular,TexCoord).rgb;
     //ambient
     vec3 ambientColor=ambient*light.ambient;
     //diffuse
