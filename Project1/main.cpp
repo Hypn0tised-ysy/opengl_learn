@@ -137,7 +137,7 @@ int main()
 		processInput(mywindow);
 
 		//render
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 		//
@@ -153,9 +153,18 @@ int main()
 		glm::mat4 model = glm::mat4(1.0f);
 		myshader.setMatrix("model", model);
 		//
-		myshader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-		myshader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f); // darken diffuse light a bit
-		myshader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+		//lighting color for fun
+		glm::vec3 lightColor;
+		lightColor.x = sin(glfwGetTime()*2.0);
+		lightColor.y = sin(glfwGetTime()*0.5);	
+		lightColor.z = sin(glfwGetTime());
+		glm::vec3 lightDiffuse = lightColor * glm::vec3(0.5f, 0.5f, 0.5f);
+		glm::vec3 lightSpecular = lightColor * glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 lightAmbient = lightColor * glm::vec3(0.2f, 0.2f, 0.2f);
+		//
+		myshader.setVec3("light.ambient", lightAmbient);
+		myshader.setVec3("light.diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("light.specular", lightSpecular);
 		myshader.setVec3("light.lightPos", lightPos);
 		myshader.setVec3("eyePos", camera.Position);
 		myshader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
