@@ -133,12 +133,16 @@ int main()
 	//load texture
 	unsigned int diffuseMap=loadTexture("C:/Users/14814/Desktop/quickaccess/container2.png");
 	unsigned int specularMap= loadTexture("C:/Users/14814/Desktop/quickaccess/container2_specular.png");
+	unsigned int emitMap = loadTexture("C:/Users/14814/Desktop/quickaccess/matrix.jpg");
 	// bind diffuse map
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, diffuseMap);
 	// bind specular map
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specularMap);
+	//bind emit map
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, emitMap);
 	//unbind buffer, not necessarily
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//activate shader
@@ -148,9 +152,10 @@ int main()
 	//render loop
 	while (!glfwWindowShouldClose(mywindow))
 	{
+		float matrixMove = glfwGetTime()*0.2f;
 		//process input
 		processInput(mywindow);
-
+		
 		//render
 		glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -174,6 +179,7 @@ int main()
 		//
 		myshader.setInt("material.diffuse", 0);
 		myshader.setInt("material.specular", 1);
+		myshader.setInt("material.emit", 2);
 		myshader.setVec3("light.ambient", lightAmbient);
 		myshader.setVec3("light.diffuse", lightDiffuse); // darken diffuse light a bit
 		myshader.setVec3("light.specular", lightSpecular);
@@ -183,6 +189,7 @@ int main()
 		myshader.setVec3("material.diffuse", 0.4f, 0.4f, 0.8f);
 		myshader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		myshader.setFloat("material.shininess", 32.0f);
+		myshader.setFloat("matrixMove", matrixMove);
 		//
 		glBindVertexArray(VAO);
 		//draw

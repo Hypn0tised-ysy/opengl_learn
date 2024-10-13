@@ -7,11 +7,13 @@ out vec4 FragColor;
 uniform vec3 eyePos;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
+uniform float matrixMove;
 
 struct Material
 {
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D emit;
     float shininess;//高光系数
 };
 struct Light
@@ -28,6 +30,9 @@ void main()
     vec3 diffuse=texture(material.diffuse,TexCoord).rgb;
     vec3 ambient=texture(material.diffuse,TexCoord).rgb;
     vec3 specular=vec3(1.0f)-texture(material.specular,TexCoord).rgb;
+    //emission
+    float specular_value = texture(material.specular, TexCoord).r;
+    vec3 emission = specular_value != 0 ? texture(material.emit,vec2(TexCoord.x,TexCoord.y+matrixMove)).rgb : vec3(0.0f);
     //ambient
     vec3 ambientColor=ambient*light.ambient;
     //diffuse
@@ -42,6 +47,6 @@ void main()
     specularAngle=pow(specularAngle,material.shininess);
     vec3 specularColor=specular*specularAngle*light.specular;
     //ultimate color
-    vec3 result=(ambientColor+diffuseColor+specularColor);
+    vec3 result=(ambientColor+diffuseColor+specularColor+emission);
     FragColor = vec4(result,1.0f);
 }
