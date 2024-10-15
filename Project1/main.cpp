@@ -204,6 +204,11 @@ int main()
 		myshader.setFloat("light.constant", 1.0f); 
 		myshader.setFloat("light.linear", 0.09f); 
 		myshader.setFloat("light.quadratic", 0.032f);
+		//flash light
+		float cutOff = glm::cos(glm::radians(12.5f));
+		myshader.setVec3("light.lightPos", camera.Position);
+		myshader.setVec3("light.spotDir", camera.Front);
+		myshader.setFloat("light.cutOff", cutOff);
 		//
 		glBindVertexArray(VAO);
 		//draw
@@ -217,15 +222,15 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36); }
 
 		// also draw the lamp object
-		lightShader.use();
-		lightShader.setMatrix("projection", projection);
-		lightShader.setMatrix("view", view);
-		model = glm::mat4(1.0f);
-		model = glm::translate(model, lightPos);
-		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-		lightShader.setMatrix("model", model);
-		glBindVertexArray(lightVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//lightShader.use();
+		//lightShader.setMatrix("projection", projection);
+		//lightShader.setMatrix("view", view);
+		//model = glm::mat4(1.0f);
+		//model = glm::translate(model, lightPos);
+		//model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+		//lightShader.setMatrix("model", model);
+		//glBindVertexArray(lightVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 		glfwSwapBuffers(mywindow);

@@ -33,6 +33,8 @@
   <ItemGroup>
     <None Include="dirLight.fs" />
     <None Include="dirLight.vs" />
+    <None Include="flashLight.fs" />
+    <None Include="flashLight.vs" />
     <None Include="fragment.fs" />
     <None Include="lightingFragment.fs" />
     <None Include="lightFragment.fs" />
