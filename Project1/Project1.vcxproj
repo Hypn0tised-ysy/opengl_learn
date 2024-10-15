@@ -31,6 +31,10 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="dirLight.fs" />
+    <None Include="dirLight.vs" />
+    <None Include="flashLight.fs" />
+    <None Include="flashLight.vs" />
     <None Include="fragment.fs" />
     <None Include="lightingFragment.fs" />
     <None Include="lightFragment.fs" />
@@ -38,6 +42,8 @@
     <None Include="lightingVertex.vs" />
     <None Include="phongFragment.fs" />
     <None Include="phongVertex.vs" />
+    <None Include="pointLight.fs" />
+    <None Include="pointLight.vs" />
     <None Include="vertex.vs" />
   </ItemGroup>
   <ItemGroup>
