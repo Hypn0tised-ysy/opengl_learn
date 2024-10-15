@@ -183,7 +183,7 @@ int main()
 		//
 		glm::vec3 lightDiffuse = glm::vec3(0.5f, 0.5f, 0.5f);
 		glm::vec3 lightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 lightAmbient = glm::vec3(0.7f, 0.7f, 0.7f);//太暗了我受不了=-=
+		glm::vec3 lightAmbient = glm::vec3(0.2f, 0.2f, 0.2f);//太暗了我受不了=-=
 		glm::vec3 lightDir = glm::vec3(-0.2f, -1.0f, -0.3f);
 		//
 		myshader.setInt("material.diffuse", 0);
@@ -206,9 +206,12 @@ int main()
 		myshader.setFloat("light.quadratic", 0.032f);
 		//flash light
 		float cutOff = glm::cos(glm::radians(12.5f));
+		float outerCutOff = glm::cos(glm::radians(17.0f));
 		myshader.setVec3("light.lightPos", camera.Position);
 		myshader.setVec3("light.spotDir", camera.Front);
 		myshader.setFloat("light.cutOff", cutOff);
+		myshader.setFloat("light.outerCutOff", outerCutOff);
+
 		//
 		glBindVertexArray(VAO);
 		//draw
