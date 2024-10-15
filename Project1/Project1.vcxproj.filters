@@ -51,6 +51,8 @@
     <None Include="fragment.fs" />
     <None Include="phongVertex.vs" />
     <None Include="phongFragment.fs" />
+    <None Include="dirLight.vs" />
+    <None Include="dirLight.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\container.jpg">

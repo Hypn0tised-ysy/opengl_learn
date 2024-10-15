@@ -31,6 +31,8 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="dirLight.fs" />
+    <None Include="dirLight.vs" />
     <None Include="fragment.fs" />
     <None Include="lightingFragment.fs" />
     <None Include="lightFragment.fs" />
