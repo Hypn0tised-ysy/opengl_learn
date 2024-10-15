@@ -40,6 +40,8 @@
     <None Include="lightingVertex.vs" />
     <None Include="phongFragment.fs" />
     <None Include="phongVertex.vs" />
+    <None Include="pointLight.fs" />
+    <None Include="pointLight.vs" />
     <None Include="vertex.vs" />
   </ItemGroup>
   <ItemGroup>

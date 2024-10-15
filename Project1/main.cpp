@@ -155,7 +155,7 @@ int main()
 	//unbind buffer, not necessarily
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//activate shader
-	Shader myshader("./dirLight.vs", "./dirLight.fs");//进行光照计算的shader
+	Shader myshader("./pointLight.vs", "./pointLight.fs");//进行光照计算的shader
 	//shader for light
 	Shader lightShader("./lightVertex.vs", "./lightFragment.fs");//渲染光源的shader
 	//render loop
@@ -193,7 +193,6 @@ int main()
 		myshader.setVec3("light.diffuse", lightDiffuse); // darken diffuse light a bit
 		myshader.setVec3("light.specular", lightSpecular);
 		myshader.setVec3("light.lightPos", lightPos);
-		myshader.setVec3("light.direction", lightDir);
 		//
 		myshader.setVec3("eyePos", camera.Position);
 		//
@@ -201,6 +200,10 @@ int main()
 		myshader.setVec3("material.diffuse", 0.4f, 0.4f, 0.8f);
 		myshader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		myshader.setFloat("material.shininess", 32.0f);
+		//attenuation
+		myshader.setFloat("light.constant", 1.0f); 
+		myshader.setFloat("light.linear", 0.09f); 
+		myshader.setFloat("light.quadratic", 0.032f);
 		//
 		glBindVertexArray(VAO);
 		//draw
@@ -214,15 +217,15 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36); }
 
 		// also draw the lamp object
-		//lightShader.use();
-		//lightShader.setMatrix("projection", projection);
-		//lightShader.setMatrix("view", view);
-		//model = glm::mat4(1.0f);
-		//model = glm::translate(model, lightPos);
-		//model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-		//lightShader.setMatrix("model", model);
-		//glBindVertexArray(lightVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		lightShader.use();
+		lightShader.setMatrix("projection", projection);
+		lightShader.setMatrix("view", view);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, lightPos);
+		model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+		lightShader.setMatrix("model", model);
+		glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 		glfwSwapBuffers(mywindow);
