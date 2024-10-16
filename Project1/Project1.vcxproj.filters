@@ -57,6 +57,8 @@
     <None Include="pointLight.fs" />
     <None Include="flashLight.vs" />
     <None Include="flashLight.fs" />
+    <None Include="multiLight.vs" />
+    <None Include="multiLight.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Desktop\container.jpg">

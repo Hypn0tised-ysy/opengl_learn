@@ -15,8 +15,6 @@ Camera camera;
 bool firstMouse = true;//鼠标第一次进入窗口，用这个变量防止鼠标进入窗口时camera乱飞
 float lastX = Width / 2;
 float lastY = Height / 2;
-//light
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 //mouse input settings
 float last_frame=0.0f;
 float delta_time=0.0f;
@@ -119,7 +117,13 @@ int main()
 		glm::vec3(1.5f,  0.2f, -1.5f),
 		glm::vec3(-1.3f,  1.0f, -1.5f)
 	};
-	//texture
+	// positions of the point lights
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3(0.7f,  0.2f,  2.0f),
+		glm::vec3(2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3(0.0f,  0.0f, -3.0f)
+	};
 	
 	//create VBO and VAO objects
 	unsigned int VBO, VAO,lightVAO;
@@ -155,7 +159,7 @@ int main()
 	//unbind buffer, not necessarily
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	//activate shader
-	Shader myshader("./pointLight.vs", "./pointLight.fs");//进行光照计算的shader
+	Shader myshader("./multiLight.vs", "./multiLight.fs");//进行光照计算的shader
 	//shader for light
 	Shader lightShader("./lightVertex.vs", "./lightFragment.fs");//渲染光源的shader
 	//render loop
@@ -188,30 +192,71 @@ int main()
 		//
 		myshader.setInt("material.diffuse", 0);
 		myshader.setInt("material.specular", 1);
-		//
-		myshader.setVec3("light.ambient", lightAmbient);
-		myshader.setVec3("light.diffuse", lightDiffuse); // darken diffuse light a bit
-		myshader.setVec3("light.specular", lightSpecular);
-		myshader.setVec3("light.lightPos", lightPos);
-		//
-		myshader.setVec3("eyePos", camera.Position);
-		//
+		//material
 		myshader.setVec3("material.ambient", 0.4f, 0.4f, 0.8f);
 		myshader.setVec3("material.diffuse", 0.4f, 0.4f, 0.8f);
 		myshader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		myshader.setFloat("material.shininess", 32.0f);
-		//attenuation
-		myshader.setFloat("light.constant", 1.0f); 
-		myshader.setFloat("light.linear", 0.09f); 
-		myshader.setFloat("light.quadratic", 0.032f);
+		//eye
+		myshader.setVec3("eyePos", camera.Position);
 		//flash light
+		myshader.setVec3("flashLight.ambient", lightAmbient);
+		myshader.setVec3("flashLight.diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("flashLight.specular", lightSpecular);
+		//attenuation
+		myshader.setFloat("flashLight.constant", 1.0f); 
+		myshader.setFloat("flashLight.linear", 0.09f); 
+		myshader.setFloat("flashLight.quadratic", 0.032f);
+		//
 		float cutOff = glm::cos(glm::radians(12.5f));
 		float outerCutOff = glm::cos(glm::radians(17.0f));
-		myshader.setVec3("light.lightPos", camera.Position);
-		myshader.setVec3("light.spotDir", camera.Front);
-		myshader.setFloat("light.cutOff", cutOff);
-		myshader.setFloat("light.outerCutOff", outerCutOff);
-
+		myshader.setVec3("flashLight.lightPos", camera.Position);
+		myshader.setVec3("flashLight.spotDir", camera.Front);
+		myshader.setFloat("flashLight.cutOff", cutOff);
+		myshader.setFloat("flashLight.outerCutOff", outerCutOff);
+		//directional light
+		myshader.setVec3("dirLight.ambient", lightAmbient);
+		myshader.setVec3("dirLight.diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("dirLight.specular", lightSpecular);
+		myshader.setVec3("dirLight.direction", lightDir);
+		
+		float constant = 1.0f, linear = 0.09f, quadratic = 0.032f;
+		//point light 1
+		myshader.setVec3("pointLight[0].ambient", lightAmbient);
+		myshader.setVec3("pointLight[0].diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("pointLight[0].specular", lightSpecular);
+		myshader.setVec3("pointLight[0].lightPos", pointLightPositions[0]);
+		//attenuation
+		myshader.setFloat("pointLight[0].constant", constant);
+		myshader.setFloat("pointLight[0].linear", linear);
+		myshader.setFloat("pointLight[0].quadratic", quadratic);
+		//point light 2
+		myshader.setVec3("pointLight[1].ambient", lightAmbient);
+		myshader.setVec3("pointLight[1].diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("pointLight[1].specular", lightSpecular);
+		myshader.setVec3("pointLight[1].lightPos", pointLightPositions[1]);
+		//attenuation
+		myshader.setFloat("pointLight[1].constant", constant);
+		myshader.setFloat("pointLight[1].linear", linear);
+		myshader.setFloat("pointLight[1].quadratic", quadratic);
+		//point light 3
+		myshader.setVec3("pointLight[2].ambient", lightAmbient);
+		myshader.setVec3("pointLight[2].diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("pointLight[2].specular", lightSpecular);
+		myshader.setVec3("pointLight[2].lightPos", pointLightPositions[2]);
+		//attenuation
+		myshader.setFloat("pointLight[2].constant", constant);
+		myshader.setFloat("pointLight[2].linear", linear);
+		myshader.setFloat("pointLight[2].quadratic", quadratic);
+		//point light 4
+		myshader.setVec3("pointLight[3].ambient", lightAmbient);
+		myshader.setVec3("pointLight[3].diffuse", lightDiffuse); // darken diffuse light a bit
+		myshader.setVec3("pointLight[3].specular", lightSpecular);
+		myshader.setVec3("pointLight[3].lightPos", pointLightPositions[3]);
+		//attenuation
+		myshader.setFloat("pointLight[3].constant", constant);
+		myshader.setFloat("pointLight[3].linear", linear);
+		myshader.setFloat("pointLight[3].quadratic", quadratic);
 		//
 		glBindVertexArray(VAO);
 		//draw
