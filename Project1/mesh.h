@@ -31,14 +31,14 @@ struct Texture
 {
 	unsigned int id;
 	std::string type;//纹理类型，specular、diffuse之类
-	std::string path;//纹理路径
+	std::string path;//纹理路径，存储该值用来防止加载重复的贴图，毕竟不同物体可能会有重用贴图的情况
 };
 class Mesh
 {
 public:
 	//绘制mesh需要的数据
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<Vertex> vertices;//顶点数据
+	std::vector<unsigned int> indices;//绘制vertex的索引，used by EBO
 	std::vector<Texture> textures;
 	unsigned int VAO;
 	//constructor

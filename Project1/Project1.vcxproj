@@ -24,11 +24,13 @@
     <ClCompile Include="image_loader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="model.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
@@ -42,6 +44,8 @@
     <None Include="lightFragment.fs" />
     <None Include="lightVertex.vs" />
     <None Include="lightingVertex.vs" />
+    <None Include="model.fs" />
+    <None Include="model.vs" />
     <None Include="multiLight.fs" />
     <None Include="multiLight.vs" />
     <None Include="phongFragment.fs" />
