@@ -1,12 +1,20 @@
+//opengl
 #include <glad/glad.h>
 #include <glfw3.h>
-#include <iostream>
-#include "shader.h"
-#include "Camera.h"
-#include "stb_image.h"
 #include <glm-master/glm/glm.hpp>
 #include <glm-master/glm/gtc/matrix_transform.hpp>
 #include <glm-master/glm/gtc/type_ptr.hpp>
+//imgui
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
+//stl
+#include <iostream>
+//
+#include "shader.h"
+#include "Camera.h"
+#include "stb_image.h"
 #include "model.h"
 #include "mesh.h"
 //screen settings
@@ -57,6 +65,16 @@ int main()
 	{
 		std::cout<<"fail to initialize glad\n";
 	}
+	// Setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	// Setup Platform/Renderer backends
+	ImGui_ImplGlfw_InitForOpenGL(mywindow, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
+	ImGui_ImplOpenGL3_Init();
 
 
 	//depth test
@@ -73,12 +91,18 @@ int main()
 	Model backpack("C:/Users/14814/Desktop/resources/art/nanosuit/nanosuit.obj");//model会和model矩阵重名，尴尬
 
 	//activate shader
-	Shader myshader("./model.vs", "./model.fs");//进行光照计算的shader
+	Shader myshader("./shader/model.vs", "./shader/model.fs");//进行光照计算的shader
 	//shader for light
-	Shader lightShader("./lightVertex.vs", "./lightFragment.fs");//渲染光源的shader
+	Shader lightShader("./shader/lightVertex.vs", "./shader/lightFragment.fs");//渲染光源的shader
 	//render loop
 	while (!glfwWindowShouldClose(mywindow))
 	{
+
+        // Start the Dear ImGui frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		ImGui::ShowDemoWindow(); // Show demo window! :)
 		//process input
 		processInput(mywindow);
 
@@ -173,27 +197,22 @@ int main()
 		myshader.setFloat("pointLight[3].quadratic", quadratic);
 		//
 		backpack.Draw(myshader);
-		//draw
 
-		// also draw the lamp object
-		//lightShader.use();
-		//lightShader.setMatrix("projection", projection);
-		//lightShader.setMatrix("view", view);
-		//model = glm::mat4(1.0f);
-		//model = glm::translate(model, lightPos);
-		//model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
-		//lightShader.setMatrix("model", model);
-		//glBindVertexArray(lightVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
+		//
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		//
 		glfwSwapBuffers(mywindow);
 		glfwPollEvents();//poll events表示处理事件，在这个函数中会调用各种call back函数响应诸如移动鼠标等事件
 	}
 
 	//释放资源
 	glfwTerminate();
-	
+	//
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+	//
 	return 0;
 }
 void framebuffer_size_callback(GLFWwindow* window,int width, int height)
