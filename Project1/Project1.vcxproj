@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\Downloads\glad\src\glad.c" />
+    <ClCompile Include="..\..\..\..\Desktop\codes\C++\ThirdPartyLibrary\include\glad\src\glad.c" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="image_loader.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />

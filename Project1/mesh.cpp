@@ -9,6 +9,8 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 }
 void Mesh::Draw(Shader& shader)
 {
+    //activate shader
+    shader.use();
     // bind appropriate textures
     unsigned int diffuseNr = 1;//diffuse number
     unsigned int specularNr = 1;

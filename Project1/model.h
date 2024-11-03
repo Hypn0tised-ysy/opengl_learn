@@ -5,7 +5,7 @@
 #include <glm-master/glm/glm.hpp>
 #include <glm-master/glm/gtc/matrix_transform.hpp>
 #include <glm-master/glm/gtc/type_ptr.hpp>
-#include "shader.h">
+#include "shader.h"
 #include <vector>
 #include "mesh.h"
 class Model//存储model文件的所有mesh信息并绘制

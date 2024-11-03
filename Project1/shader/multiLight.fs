@@ -11,6 +11,7 @@ struct Material
 {
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D wallinfo;
     float shininess;//高光系数
 };
 struct FlashLight//
@@ -37,6 +38,7 @@ struct DirLight//
 };
 struct PointLight//点光源
 {
+    float intensity;
     vec3 lightPos;
     vec3 ambient;
     vec3 diffuse;
@@ -65,6 +67,7 @@ void main()
     }
     result+=CalDirLight(normal,viewDir,dirLight);
     result+=CalFlashLight(normal,viewDir,flashLight);
+    vec3 wallcolor=texture(material.wallinfo,TexCoord).rgb;
     FragColor = vec4(result,1.0f);
 }
 vec3 CalDirLight(vec3 normal,vec3 viewDir,DirLight dirLight)
@@ -107,7 +110,7 @@ vec3 CalPointLight(vec3 normal,vec3 viewDir,PointLight pointLight)
     vec3 specularColor=specular*specularAngle*pointLight.specular;
     //ultimate color
     vec3 result=attenuation*(ambientColor+diffuseColor+specularColor);
-    return result;
+    return result*pointLight.intensity;
 }
 vec3 CalFlashLight(vec3 normal, vec3 viewDir,FlashLight flashLight)
 {
